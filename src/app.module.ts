@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { db } from 'config';
 import { UsersModule } from './users/users.module';
-import { User } from './users/user.entity';
+import { User } from './users/entity/user.entity';
 
 const { type, port, database, synchronize, username, password } = db;
 
