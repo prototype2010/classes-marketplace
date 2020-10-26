@@ -7,13 +7,13 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Post('/parent')
+  @Post('parent')
   createParent(@Body() parentDTO: ParentDTO) {
-    return this.createParent(parentDTO);
+    return this.usersService.createParent(parentDTO);
   }
 
-  @Post('/business')
+  @Post('business')
   createBusiness(@Body() businessDTO: BusinessDTO) {
-    return this.createBusiness(businessDTO);
+    return this.usersService.createBusiness(businessDTO);
   }
 }

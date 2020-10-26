@@ -1,4 +1,5 @@
 import { IsEmail, IsString } from 'class-validator';
+import { EqualProps } from '../../utils/validation/passwords.validator';
 
 export class BaseUserDTO {
   @IsEmail()
@@ -11,5 +12,6 @@ export class BaseUserDTO {
   password: string;
 
   @IsString()
+  @EqualProps('password', { message: 'Passwords should match' })
   passwordConfirmation: string;
 }
