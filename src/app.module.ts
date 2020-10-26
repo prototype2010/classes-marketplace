@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { db } from 'config';
+import { UsersModule } from './users/users.module';
 
 const { type, port, database, synchronize, username, password } = db;
 
@@ -19,6 +20,7 @@ const { type, port, database, synchronize, username, password } = db;
       entities: [],
       synchronize,
     }),
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
