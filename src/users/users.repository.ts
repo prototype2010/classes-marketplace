@@ -6,7 +6,9 @@ import { BaseUserDTO } from './dto/baseUser.dto';
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
-  async createParent(userDTO: ParentDTO) {}
+  async createParent(userDTO: ParentDTO) {
+    var x = 1;
+  }
 
   async createBusiness(businessDTO: BusinessDTO) {}
 
