@@ -1,0 +1,12 @@
+server:
+  port:
+db:
+  type:
+  port:
+  database:
+  synchronize: false
+  username:
+  password:
+  host: localhost
+jwt:
+  expiresIn:
