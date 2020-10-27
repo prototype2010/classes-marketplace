@@ -1,5 +1,5 @@
 import { BaseUserDTO } from './baseUser.dto';
-import { IsString, MaxLength } from 'class-validator';
+import { IsEmail, IsString, MaxLength } from 'class-validator';
 
 export class BusinessDTO extends BaseUserDTO {
   @IsString()
@@ -9,6 +9,9 @@ export class BusinessDTO extends BaseUserDTO {
   @IsString()
   @MaxLength(50)
   name: string;
+
+  @IsEmail()
+  contactEmail: string;
 
   @IsString()
   @MaxLength(50)
