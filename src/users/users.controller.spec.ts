@@ -1,12 +1,12 @@
 import * as request from 'supertest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from './users.controller';
+import { Test } from '@nestjs/testing';
 
 import { internet, phone } from 'faker';
 import { INestApplication } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users.module';
 import { TypeOrmConfigOptions } from '../app.module';
+import { UserRepository } from './user.repository';
 
 describe('UsersController', () => {
   let app: INestApplication;
@@ -36,7 +36,20 @@ describe('UsersController', () => {
         return request(app.getHttpServer())
           .post('/users/parent')
           .send(user)
-          .expect(201, {});
+          .expect(201);
+      });
+
+      test('Responce matches to user data', () => {
+        return request(app.getHttpServer())
+          .post('/users/parent')
+          .send(user)
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.email).toBe(user.email);
+            expect(body.phone).toBe(user.phone);
+            expect(body.password).toBe(undefined);
+            expect(body.id).toBeTruthy();
+          });
       });
     });
 

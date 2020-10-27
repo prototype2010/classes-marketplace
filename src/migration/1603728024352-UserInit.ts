@@ -45,7 +45,7 @@ export class UserInit1603728024352 implements MigrationInterface {
           {
             name: 'name',
             type: 'varchar',
-            isNullable: false,
+            isNullable: true,
           },
           {
             name: 'owner',

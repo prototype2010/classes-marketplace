@@ -1,5 +1,6 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { USER_TYPES } from '../users/user.types.enum';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User extends BaseEntity {
@@ -19,6 +20,7 @@ export class User extends BaseEntity {
   phone: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column({ nullable: true })

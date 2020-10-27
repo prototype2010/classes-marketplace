@@ -22,7 +22,7 @@ export class UserRepository extends Repository<User> {
       user.phone = phone;
       user.type = USER_TYPES.PARENT;
 
-      await user.save();
+      return user.save();
     }
   }
 
