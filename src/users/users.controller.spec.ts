@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 
-import { internet, phone } from 'faker';
+import { internet, phone, company, name, random } from 'faker';
 import { INestApplication } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users.module';
@@ -25,21 +25,21 @@ describe('UsersController', () => {
       let user: { [key: string]: any } = {};
 
       beforeEach(() => {
+        /* parent */
         user.email = internet.email();
         user.phone = phone.phoneNumber();
         user.password = internet.password();
         user.passwordConfirmation = user.password;
       });
 
-      test('User can be registered successfully', () => {
-        return request(app.getHttpServer())
+      test('User can be registered successfully', () =>
+        request(app.getHttpServer())
           .post('/users/parent')
           .send(user)
-          .expect(201);
-      });
+          .expect(201));
 
-      test('Responce matches to user data', () => {
-        return request(app.getHttpServer())
+      test('Responce matches to user data', () =>
+        request(app.getHttpServer())
           .post('/users/parent')
           .send(user)
           .expect(201)
@@ -48,26 +48,90 @@ describe('UsersController', () => {
             expect(body.phone).toBe(user.phone);
             expect(body.password).toBe(undefined);
             expect(body.id).toBeTruthy();
-          });
-      });
+          }));
     });
 
     describe('unsuccessful registration', () => {
-      let user;
+      /* eslint-disable-next-line */
+      let user: { [key: string]: any } = {};
 
-      beforeEach(() => {});
+      beforeEach(() => {
+        /* parent */
+        user.email = internet.email();
+        user.phone = phone.phoneNumber();
+        user.password = internet.password();
+        user.passwordConfirmation = user.password;
+      });
+
+      test('Empty email', () => {
+        return request(app.getHttpServer())
+          .post('/users/parent')
+          .send({})
+          .expect(400, []);
+      });
     });
   });
 
   describe('business registration', () => {
     describe('successful registration', () => {
-      let user;
+      /* eslint-disable-next-line */
+      let user: { [key: string]: any } = {};
 
-      beforeEach(() => {});
+      beforeEach(() => {
+        /* parent */
+        user.email = internet.email();
+        user.phone = phone.phoneNumber();
+        user.password = internet.password();
+        user.passwordConfirmation = user.password;
+        /* business */
+        user.contactEmail = internet.email();
+        user.localBusinessId = random.number();
+        user.name = company.companyName();
+        user.owner = name.findName();
+        user.website = internet.domainName();
+      });
+
+      test('User can be registered successfully', () =>
+        request(app.getHttpServer())
+          .post('/users/business')
+          .send(user)
+          .expect(201));
+
+      test('Responce matches to user data', () =>
+        request(app.getHttpServer())
+          .post('/users/business')
+          .send(user)
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.email).toBe(user.email);
+            expect(body.phone).toBe(user.phone);
+            expect(body.password).toBe(undefined);
+            expect(body.id).toBeTruthy();
+            expect(body.name).toBe(user.name);
+            expect(body.owner).toBe(user.owner);
+            expect(body.website).toBe(user.website);
+            expect(body.localBusinessId).toBe(user.localBusinessId);
+            expect(body.contactEmail).toBe(user.contactEmail);
+          }));
     });
 
     describe('unsuccessful registration', () => {
-      let user;
+      /* eslint-disable-next-line */
+      let user: { [key: string]: any } = {};
+
+      beforeEach(() => {
+        /* parent */
+        user.email = internet.email();
+        user.phone = phone.phoneNumber();
+        user.password = internet.password();
+        user.passwordConfirmation = user.password;
+        /* business */
+        user.contactEmail = internet.email();
+        user.localBusinessId = random.number();
+        user.name = company.companyName();
+        user.owner = name.findName();
+        user.website = internet.domainName();
+      });
 
       beforeEach(() => {});
     });

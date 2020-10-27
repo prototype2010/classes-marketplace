@@ -4,11 +4,14 @@ import {
   Controller,
   Post,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ParentDTO } from './dto/parent.dto';
 import { BusinessDTO } from './dto/business.dto';
 import { UserService } from './user.service';
 
+@UsePipes(new ValidationPipe({ transform: true }))
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
 export class UsersController {

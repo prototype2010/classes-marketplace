@@ -41,6 +41,7 @@ export class UserRepository extends Repository<User> {
     user.name = name;
     user.owner = owner;
     user.website = website;
+    user.type = USER_TYPES.BUSINESS;
 
     return user.save();
   }
