@@ -2,17 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { ParentDTO } from './dto/parent.dto';
 import { BusinessDTO } from './dto/business.dto';
 import { UserRepository } from './user.repository';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Connection } from 'typeorm';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(UserRepository)
-    private usersRepository: UserRepository,
-  ) {}
+  private userRepository: UserRepository;
+  constructor(private readonly connection: Connection) {
+    this.userRepository = this.connection.getCustomRepository<UserRepository>(
+      UserRepository,
+    );
+  }
 
   async createParent(parentDTO: ParentDTO) {
-    return this.usersRepository.createParent(parentDTO);
+    return this.userRepository.createParent(parentDTO);
   }
 
   async createBusiness(businessDTO: BusinessDTO) {}

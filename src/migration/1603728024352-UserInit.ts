@@ -20,34 +20,42 @@ export class UserInit1603728024352 implements MigrationInterface {
             name: 'contact_email',
             type: 'varchar',
             isUnique: true,
+            isNullable: true,
           },
           {
             name: 'phone',
             type: 'varchar',
+            isNullable: false,
           },
           {
             name: 'type',
             type: 'varchar',
+            isNullable: false,
           },
           {
             name: 'password',
             type: 'varchar',
+            isNullable: false,
           },
           {
             name: 'local_business_id',
             type: 'varchar',
+            isNullable: true,
           },
           {
             name: 'name',
             type: 'varchar',
+            isNullable: false,
           },
           {
             name: 'owner',
             type: 'varchar',
+            isNullable: true,
           },
           {
             name: 'website',
             type: 'varchar',
+            isNullable: true,
           },
         ],
       }),

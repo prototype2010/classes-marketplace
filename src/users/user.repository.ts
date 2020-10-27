@@ -4,13 +4,14 @@ import { User } from '../entity/user.entity';
 import { ParentDTO } from './dto/parent.dto';
 import { BusinessDTO } from './dto/business.dto';
 import { ConflictException } from '@nestjs/common';
+import { USER_TYPES } from './user.types.enum';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
   async createParent(userDTO: ParentDTO) {
     const { email, password, phone } = userDTO;
 
-    const existingUser = await this.find({ email });
+    const existingUser = await this.findOne({ email });
 
     if (existingUser) {
       throw new ConflictException('Email already used');
@@ -19,6 +20,7 @@ export class UserRepository extends Repository<User> {
       user.email = email;
       user.password = await this.hashPassword(password);
       user.phone = phone;
+      user.type = USER_TYPES.PARENT;
 
       await user.save();
     }
