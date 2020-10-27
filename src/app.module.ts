@@ -9,20 +9,19 @@ import { User } from './entity/user.entity';
 
 const { type, port, database, synchronize, username, password } = db;
 
+export const TypeOrmConfigOptions = {
+  type,
+  host: 'localhost',
+  port,
+  username,
+  password,
+  database,
+  entities: [User],
+  synchronize,
+};
+
 @Module({
-  imports: [
-    TypeOrmModule.forRoot({
-      type,
-      host: 'localhost',
-      port,
-      username,
-      password,
-      database,
-      entities: [User],
-      synchronize,
-    }),
-    UsersModule,
-  ],
+  imports: [TypeOrmModule.forRoot(TypeOrmConfigOptions), UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })

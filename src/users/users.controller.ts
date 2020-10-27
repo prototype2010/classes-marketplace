@@ -1,19 +1,19 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ParentDTO } from './dto/parent.dto';
 import { BusinessDTO } from './dto/business.dto';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private userService: UserService) {}
 
   @Post('parent')
   createParent(@Body() parentDTO: ParentDTO) {
-    return this.usersService.createParent(parentDTO);
+    return this.userService.createParent(parentDTO);
   }
 
   @Post('business')
   createBusiness(@Body() businessDTO: BusinessDTO) {
-    return this.usersService.createBusiness(businessDTO);
+    return this.userService.createBusiness(businessDTO);
   }
 }
