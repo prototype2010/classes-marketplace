@@ -17,5 +17,7 @@ export class UserService {
     return this.userRepository.createParent(parentDTO);
   }
 
-  async createBusiness(businessDTO: BusinessDTO) {}
+  async createBusiness(businessDTO: BusinessDTO) {
+    return this.userRepository.createBusiness(businessDTO);
+  }
 }

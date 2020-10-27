@@ -8,25 +8,50 @@ import { USER_TYPES } from './user.types.enum';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  async createParent(userDTO: ParentDTO) {
-    const { email, password, phone } = userDTO;
+  async createParent({ email, password, phone }: ParentDTO) {
+    await this.checkNotExist(email);
 
+    const user = new User();
+    user.email = email;
+    user.password = await this.hashPassword(password);
+    user.phone = phone;
+    user.type = USER_TYPES.PARENT;
+
+    return user.save();
+  }
+
+  async createBusiness({
+    email,
+    password,
+    phone,
+    contactEmail,
+    localBusinessId,
+    name,
+    owner,
+    website,
+  }: BusinessDTO) {
+    await this.checkNotExist(email);
+
+    const user = new User();
+    user.email = email;
+    user.password = await this.hashPassword(password);
+    user.phone = phone;
+    user.contactEmail = contactEmail;
+    user.localBusinessId = localBusinessId;
+    user.name = name;
+    user.owner = owner;
+    user.website = website;
+
+    return user.save();
+  }
+
+  private async checkNotExist(email: string) {
     const existingUser = await this.findOne({ email });
 
     if (existingUser) {
       throw new ConflictException('Email already used');
-    } else {
-      const user = new User();
-      user.email = email;
-      user.password = await this.hashPassword(password);
-      user.phone = phone;
-      user.type = USER_TYPES.PARENT;
-
-      return user.save();
     }
   }
-
-  async createBusiness(businessDTO: BusinessDTO) {}
 
   private async hashPassword(password: string, saltRounds = 10) {
     const salt = await bcrypt.genSalt(saltRounds);
