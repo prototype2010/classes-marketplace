@@ -6,7 +6,6 @@ import { INestApplication } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users.module';
 import { TypeOrmConfigOptions } from '../app.module';
-import { UserRepository } from './user.repository';
 
 describe('UsersController', () => {
   let app: INestApplication;
