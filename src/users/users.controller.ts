@@ -23,6 +23,7 @@ export class UsersController {
   }
 
   @Post('business')
+  @UsePipes(new ValidationPipe())
   createBusiness(@Body() businessDTO: BusinessDTO) {
     return this.userService.createBusiness(businessDTO);
   }

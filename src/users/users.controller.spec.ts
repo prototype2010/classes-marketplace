@@ -1,11 +1,14 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 
-import { internet, phone, company, name, random } from 'faker';
+import * as faker from 'faker';
 import { INestApplication } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users.module';
 import { TypeOrmConfigOptions } from '../app.module';
+import { USER_TYPES } from './user.types.enum';
+
+const { internet, phone, company, name, random } = faker;
 
 describe('UsersController', () => {
   let app: INestApplication;
@@ -29,7 +32,7 @@ describe('UsersController', () => {
         user.email = internet.email();
         user.name = name.findName();
         user.phone = phone.phoneNumber();
-        user.password = internet.password();
+        user.password = random.alphaNumeric(10);
         user.passwordConfirmation = user.password;
       });
 
@@ -66,7 +69,7 @@ describe('UsersController', () => {
         /* parent */
         user.email = internet.email();
         user.phone = phone.phoneNumber();
-        user.password = internet.password();
+        user.password = random.alphaNumeric(10);
         user.passwordConfirmation = user.password;
       });
 
@@ -164,23 +167,18 @@ describe('UsersController', () => {
     });
   });
 
-  xdescribe('business registration', () => {
+  describe('business registration', () => {
     describe('successful registration', () => {
       /* eslint-disable-next-line */
       let user: { [key: string]: any } = {};
 
       beforeEach(() => {
-        /* parent */
         user.email = internet.email();
         user.phone = phone.phoneNumber();
-        user.password = internet.password();
+        user.password = random.alphaNumeric(10);
         user.passwordConfirmation = user.password;
-        /* business */
-        user.contactEmail = internet.email();
-        user.localBusinessId = random.number();
+        user.localBusinessId = faker.random.alphaNumeric(10);
         user.name = company.companyName();
-        user.owner = name.findName();
-        user.website = internet.domainName();
       });
 
       test('User can be registered successfully', () =>
@@ -200,10 +198,8 @@ describe('UsersController', () => {
             expect(body.password).toBe(undefined);
             expect(body.id).toBeTruthy();
             expect(body.name).toBe(user.name);
-            expect(body.owner).toBe(user.owner);
-            expect(body.website).toBe(user.website);
+            expect(body.type).toBe(USER_TYPES.BUSINESS);
             expect(body.localBusinessId).toBe(user.localBusinessId);
-            expect(body.contactEmail).toBe(user.contactEmail);
           }));
     });
 
@@ -212,20 +208,123 @@ describe('UsersController', () => {
       let user: { [key: string]: any } = {};
 
       beforeEach(() => {
-        /* parent */
         user.email = internet.email();
         user.phone = phone.phoneNumber();
-        user.password = internet.password();
+        user.password = random.alphaNumeric(10);
         user.passwordConfirmation = user.password;
-        /* business */
-        user.contactEmail = internet.email();
-        user.localBusinessId = random.number();
+        user.localBusinessId = random.alphaNumeric(10);
         user.name = company.companyName();
-        user.owner = name.findName();
-        user.website = internet.domainName();
       });
 
-      beforeEach(() => {});
+      test('Empty business id', () => {
+        return request(app.getHttpServer())
+          .post('/users/business')
+          .send({ ...user, localBusinessId: '' })
+          .expect(400, {
+            statusCode: 400,
+            message: [
+              'localBusinessId must be longer than or equal to 8 characters',
+            ],
+            error: 'Bad Request',
+          });
+      });
+
+      test('Empty phone', () => {
+        return request(app.getHttpServer())
+          .post('/users/business')
+          .send({ ...user, phone: '' })
+          .expect(400, {
+            statusCode: 400,
+            message: ['phone must be longer than or equal to 6 characters'],
+            error: 'Bad Request',
+          });
+      });
+
+      test('Empty email address', () => {
+        return request(app.getHttpServer())
+          .post('/users/business')
+          .send({ ...user, email: '' })
+          .expect(400, {
+            statusCode: 400,
+            message: ['email must be an email'],
+            error: 'Bad Request',
+          });
+      });
+
+      test('Passwords do not match', () => {
+        return request(app.getHttpServer())
+          .post('/users/business')
+          .send({ ...user, password: undefined })
+          .expect(400, {
+            statusCode: 400,
+            message: [
+              'password must be longer than or equal to 8 characters',
+              'password must be a string',
+              'Passwords should match',
+            ],
+            error: 'Bad Request',
+          });
+      });
+      test('Password confirmation is absent', () => {
+        return request(app.getHttpServer())
+          .post('/users/business')
+          .send({ ...user, passwordConfirmation: undefined })
+          .expect(400, {
+            statusCode: 400,
+            message: [
+              'Passwords should match',
+              'passwordConfirmation must be longer than or equal to 8 characters',
+              'passwordConfirmation must be a string',
+            ],
+            error: 'Bad Request',
+          });
+      });
+
+      test('Both passwords absent', () => {
+        return request(app.getHttpServer())
+          .post('/users/business')
+          .send({
+            ...user,
+            passwordConfirmation: undefined,
+            password: undefined,
+          })
+          .expect(400, {
+            statusCode: 400,
+            message: [
+              'password must be longer than or equal to 8 characters',
+              'password must be a string',
+              'Passwords should match',
+              'passwordConfirmation must be longer than or equal to 8 characters',
+              'passwordConfirmation must be a string',
+            ],
+            error: 'Bad Request',
+          });
+      });
+
+      test('Empty request', () => {
+        return request(app.getHttpServer())
+          .post('/users/business')
+          .send()
+          .expect(400, {
+            statusCode: 400,
+            message: [
+              'localBusinessId must be longer than or equal to 8 characters',
+              'localBusinessId must be shorter than or equal to 50 characters',
+              'localBusinessId must be a string',
+              'name must be shorter than or equal to 50 characters',
+              'name must be a string',
+              'email must be an email',
+              'phone must be longer than or equal to 6 characters',
+              'phone must be a string',
+              'password must be longer than or equal to 8 characters',
+              'password must be a string',
+              'Passwords should match',
+              'passwordConfirmation must be longer than or equal to 8 characters',
+              'passwordConfirmation must be a string',
+            ],
+            error: 'Bad Request',
+          });
+      });
     });
   });
 
