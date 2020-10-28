@@ -1,25 +1,29 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import {TypeOrmModule} from "@nestjs/typeorm";
+import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { db} from 'config';
+import { db } from 'config';
+import { UsersModule } from './users/users.module';
+import { User } from './entity/user.entity';
+import { AuthModule } from './auth/auth.module';
 
-const {type, port, database, synchronize, username, password} = db
+const { type, port, database, synchronize, username, password } = db;
+
+export const TypeOrmConfigOptions = {
+  type,
+  host: 'localhost',
+  port,
+  username,
+  password,
+  database,
+  entities: [User],
+  synchronize,
+  autoLoadEntities: true,
+};
 
 @Module({
-  imports: [
-      TypeOrmModule.forRoot({
-        type,
-        host: 'localhost',
-        port,
-        username,
-        password,
-        database,
-        entities: [],
-        synchronize,
-      })
-  ],
+  imports: [TypeOrmModule.forRoot(TypeOrmConfigOptions), UsersModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })

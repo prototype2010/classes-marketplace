@@ -4,7 +4,7 @@ db:
   type: postgres
   port: 5432
   database: auction
-  synchronize: true
+  synchronize: false
   username: powerchain
   password: Firstday2010
   host: localhost
