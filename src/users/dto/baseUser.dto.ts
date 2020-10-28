@@ -6,17 +6,15 @@ export class BaseUserDTO {
   email: string;
 
   @IsString()
+  @MinLength(6)
   phone: string;
 
   @IsString()
+  @MinLength(8)
   password: string;
 
   @IsString()
   @MinLength(8)
   @EqualProps('password', { message: 'Passwords should match' })
   passwordConfirmation: string;
-
-  @IsString()
-  @MaxLength(50)
-  name: string;
 }

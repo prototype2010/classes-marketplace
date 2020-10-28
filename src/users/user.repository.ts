@@ -13,8 +13,8 @@ export class UserRepository extends Repository<User> {
 
     const user = new User();
     user.email = email;
-    user.password = await this.hashPassword(password);
     user.phone = phone;
+    user.password = await this.hashPassword(password);
     user.type = USER_TYPES.PARENT;
 
     return user.save();
@@ -24,23 +24,23 @@ export class UserRepository extends Repository<User> {
     email,
     password,
     phone,
-    contactEmail,
+    // contactEmail,
     localBusinessId,
     name,
-    owner,
-    website,
-  }: BusinessDTO) {
+  }: // owner,
+  // website,
+  BusinessDTO) {
     await this.checkNotExist(email);
 
     const user = new User();
     user.email = email;
     user.password = await this.hashPassword(password);
     user.phone = phone;
-    user.contactEmail = contactEmail;
+    // user.contactEmail = contactEmail;
     user.localBusinessId = localBusinessId;
     user.name = name;
-    user.owner = owner;
-    user.website = website;
+    // user.owner = owner;
+    // user.website = website;
     user.type = USER_TYPES.BUSINESS;
 
     return user.save();

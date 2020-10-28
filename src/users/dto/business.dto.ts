@@ -6,14 +6,7 @@ export class BusinessDTO extends BaseUserDTO {
   @MaxLength(50)
   localBusinessId: string;
 
-  @IsEmail()
-  contactEmail: string;
-
   @IsString()
   @MaxLength(50)
-  owner: string;
-
-  @IsString()
-  @MaxLength(50)
-  website: string;
+  name: string;
 }
