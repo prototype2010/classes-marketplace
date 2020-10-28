@@ -1,37 +1,47 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { USER_TYPES } from '../users/user.types.enum';
 import { Exclude } from 'class-transformer';
+
+export enum PUBLIC_USER_ROLES {
+  BUSINESS = 'business',
+  PARENT = 'parent',
+}
+
+export enum INNER_USER_ROLES {
+  ADMIN = 'admin',
+}
+
+export type USER_ROLES = PUBLIC_USER_ROLES & INNER_USER_ROLES;
 
 @Entity()
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  type: USER_TYPES;
+  @Column({ nullable: false, default: PUBLIC_USER_ROLES.PARENT })
+  type: USER_ROLES;
 
   @Column({ unique: true })
   email: string;
 
-  @Column({ nullable: true })
-  contactEmail: string;
-
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   phone: string;
 
   @Column()
   @Exclude()
   password: string;
 
-  @Column({ nullable: true })
-  localBusinessId: string;
+  @Column({ nullable: false })
+  firstName: string;
 
-  @Column({ nullable: true })
-  name: string;
+  @Column({ nullable: false })
+  lastName: string;
 
-  @Column({ nullable: true })
-  owner: string;
+  @Column({ nullable: false, default: false })
+  isApprovedByAdmin: boolean;
 
-  @Column({ nullable: true })
-  website: string;
+  @Column({ nullable: false, default: false })
+  isEmailConfirmed: boolean;
+
+  @Column({ nullable: false })
+  emailConfirmationHash: string;
 }

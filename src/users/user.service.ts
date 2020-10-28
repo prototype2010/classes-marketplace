@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ParentDTO } from './dto/parent.dto';
-import { BusinessDTO } from './dto/business.dto';
+import { ParentDTO } from '../auth/dto/parent.dto';
+import { BusinessDTO } from '../auth/dto/business.dto';
 import { UserRepository } from './user.repository';
 import { Connection } from 'typeorm';
 
@@ -13,11 +13,7 @@ export class UserService {
     );
   }
 
-  async createParent(parentDTO: ParentDTO) {
-    return this.userRepository.createParent(parentDTO);
-  }
-
-  async createBusiness(businessDTO: BusinessDTO) {
-    return this.userRepository.createBusiness(businessDTO);
+  async createUser(parentDTO: ParentDTO) {
+    return this.userRepository.createUser(parentDTO);
   }
 }
