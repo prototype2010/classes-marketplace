@@ -2,10 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
 import { db } from 'config';
 import { UsersModule } from './users/users.module';
-import { User } from './entity/user.entity';
 import { AuthModule } from './auth/auth.module';
 
 const { type, port, database, synchronize, username, password } = db;
@@ -17,7 +15,7 @@ export const TypeOrmConfigOptions = {
   username,
   password,
   database,
-  entities: [User], // TODO replcae this to path
+  entities: [__dirname + '/**/*.entity{.ts,.js}'], // TODO replcae this to path
   synchronize,
   autoLoadEntities: true,
 };
