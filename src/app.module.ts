@@ -15,7 +15,7 @@ export const TypeOrmConfigOptions = {
   username,
   password,
   database,
-  entities: [__dirname + '/**/*.entity{.ts,.js}'], // TODO replcae this to path
+  entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize,
   autoLoadEntities: true,
 };
