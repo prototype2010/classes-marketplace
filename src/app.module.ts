@@ -17,13 +17,17 @@ export const TypeOrmConfigOptions = {
   username,
   password,
   database,
-  entities: [User],
+  entities: [User], // TODO replcae this to path
   synchronize,
   autoLoadEntities: true,
 };
 
 @Module({
-  imports: [TypeOrmModule.forRoot(TypeOrmConfigOptions), UsersModule, AuthModule],
+  imports: [
+    TypeOrmModule.forRoot(TypeOrmConfigOptions),
+    UsersModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
