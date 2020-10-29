@@ -10,17 +10,22 @@ export class UserRepository extends Repository<User> {
     email,
     password,
     phone,
-    firstName,
+    passwordConfirmation,
     lastName,
     role,
+    firstName,
   }: SignUpDTO) {
     await this.checkNotExist(email);
 
     const user = new User();
     user.email = email;
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.phone = passwordConfirmation;
     user.phone = phone;
-    user.password = await this.hashPassword(password);
-    user.role = USER_ROLES.PARENT;
+    user.password = await this.hash(password);
+    user.emailConfirmationHash = await this.hash(email);
+    user.role = role as USER_ROLES;
 
     return user.save();
   }
@@ -33,7 +38,7 @@ export class UserRepository extends Repository<User> {
     }
   }
 
-  private async hashPassword(password: string, saltRounds = 10) {
+  private async hash(password: string, saltRounds = 10) {
     const salt = await bcrypt.genSalt(saltRounds);
 
     return bcrypt.hash(password, salt);

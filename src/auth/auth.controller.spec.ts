@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigOptions } from '../app.module';
 import { UsersModule } from '../users/users.module';
 import { AuthModule } from './auth.module';
+import { USER_ROLES } from '../entity/user.entity';
 const { internet, phone, company, name, random } = faker;
 
 describe('AuthController', () => {
@@ -33,26 +34,21 @@ describe('AuthController', () => {
       beforeEach(() => {
         /* parent */
         user.email = internet.email();
-        user.name = name.findName();
         user.phone = phone.phoneNumber();
         user.password = random.alphaNumeric(10);
         user.passwordConfirmation = user.password;
-        // user.localBusinessId = faker.random.alphaNumeric(10);
+        user.firstName = random.alphaNumeric(10);
+        user.lastName = random.alphaNumeric(10);
+        user.role = USER_ROLES.BUSINESS;
       });
 
-      test('User can be registered successfully', () =>
+      it('User can be registered successfully', () =>
         request(app.getHttpServer())
           .post('/auth/signup')
           .send(user)
           .expect(201));
 
-      test('User can be registered successfully2', () =>
-        request(app.getHttpServer())
-          .post('/auth/signup')
-          .send(user)
-          .expect(201));
-
-      test('Responce matches to user data', () =>
+      it('Responce matches to user data', () =>
         request(app.getHttpServer())
           .post('/auth/signup')
           .send(user)
@@ -75,6 +71,9 @@ describe('AuthController', () => {
         user.phone = phone.phoneNumber();
         user.password = random.alphaNumeric(10);
         user.passwordConfirmation = user.password;
+        user.firstName = faker.random.alphaNumeric(10);
+        user.lastName = faker.random.alphaNumeric(10);
+        user.role = USER_ROLES.PARENT;
       });
 
       test('Empty phone', () => {
@@ -83,7 +82,9 @@ describe('AuthController', () => {
           .send({ ...user, phone: '' })
           .expect(400, {
             statusCode: 400,
-            message: ['phone must be longer than or equal to 6 characters'],
+            message: [
+              { message: '"phone" is not allowed to be empty', path: 'phone' },
+            ],
             error: 'Bad Request',
           });
       });
@@ -102,28 +103,36 @@ describe('AuthController', () => {
       test('Passwords do not match', () => {
         return request(app.getHttpServer())
           .post('/auth/signup')
-          .send({ ...user, password: undefined })
+          .send({ ...user, password: 'asdasd' })
           .expect(400, {
             statusCode: 400,
             message: [
-              'password must be longer than or equal to 8 characters',
-              'password must be a string',
-              'Passwords should match',
+              {
+                message: '"password" length must be at least 8 characters long',
+                path: 'password',
+              },
             ],
             error: 'Bad Request',
           });
       });
+      test('Password is absent', () => {
+        return request(app.getHttpServer())
+          .post('/auth/signup')
+          .send({ ...user, password: undefined })
+          .expect(400, {
+            statusCode: 400,
+            message: ['password must be a string'],
+            error: 'Bad Request',
+          });
+      });
+
       test('Password confirmation is absent', () => {
         return request(app.getHttpServer())
           .post('/auth/signup')
           .send({ ...user, passwordConfirmation: undefined })
           .expect(400, {
             statusCode: 400,
-            message: [
-              'Passwords should match',
-              'passwordConfirmation must be longer than or equal to 8 characters',
-              'passwordConfirmation must be a string',
-            ],
+            message: ['passwordConfirmation must be a string'],
             error: 'Bad Request',
           });
       });
@@ -139,10 +148,7 @@ describe('AuthController', () => {
           .expect(400, {
             statusCode: 400,
             message: [
-              'password must be longer than or equal to 8 characters',
               'password must be a string',
-              'Passwords should match',
-              'passwordConfirmation must be longer than or equal to 8 characters',
               'passwordConfirmation must be a string',
             ],
             error: 'Bad Request',
@@ -157,13 +163,166 @@ describe('AuthController', () => {
             statusCode: 400,
             message: [
               'email must be an email',
-              'phone must be longer than or equal to 6 characters',
               'phone must be a string',
-              'password must be longer than or equal to 8 characters',
               'password must be a string',
-              'Passwords should match',
-              'passwordConfirmation must be longer than or equal to 8 characters',
               'passwordConfirmation must be a string',
+              'role must be a string',
+              'firstName must be a string',
+              'lastName must be a string',
+            ],
+            error: 'Bad Request',
+          });
+      });
+    });
+  });
+
+  describe('Business registration', () => {
+    describe('successful registration', () => {
+      /* eslint-disable-next-line */
+      let user: { [key: string]: any } = {};
+
+      beforeEach(() => {
+        /* parent */
+        user.email = internet.email();
+        user.phone = random.alphaNumeric(10);
+        user.password = random.alphaNumeric(10);
+        user.passwordConfirmation = user.password;
+        user.firstName = random.alphaNumeric(10);
+        user.lastName = random.alphaNumeric(10);
+        user.role = USER_ROLES.BUSINESS;
+      });
+
+      it('User can be registered successfully', () =>
+        request(app.getHttpServer())
+          .post('/auth/signup')
+          .send(user)
+          .expect(201));
+
+      it('Responce matches to user data', () =>
+        request(app.getHttpServer())
+          .post('/auth/signup')
+          .send(user)
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.email).toBe(user.email);
+            expect(body.phone).toBe(user.phone);
+            expect(body.password).toBe(undefined);
+            expect(body.firstName).toBe(user.firstName);
+            expect(body.lastName).toBe(user.lastName);
+            expect(body.role).toBe(user.role);
+            expect(body.id).toBeTruthy();
+          }));
+    });
+
+    describe('unsuccessful registration', () => {
+      /* eslint-disable-next-line */
+      let user: { [key: string]: any } = {};
+
+      beforeEach(() => {
+        /* parent */
+        user.email = internet.email();
+        user.phone = random.alphaNumeric(10);
+        user.password = random.alphaNumeric(10);
+        user.passwordConfirmation = user.password;
+        user.firstName = faker.random.alphaNumeric(10);
+        user.lastName = faker.random.alphaNumeric(10);
+        user.role = USER_ROLES.BUSINESS;
+      });
+
+      test('Empty phone', () => {
+        return request(app.getHttpServer())
+          .post('/auth/signup')
+          .send({ ...user, phone: '' })
+          .expect(400, {
+            statusCode: 400,
+            message: [
+              { message: '"phone" is not allowed to be empty', path: 'phone' },
+            ],
+            error: 'Bad Request',
+          });
+      });
+
+      test('Empty email address', () => {
+        return request(app.getHttpServer())
+          .post('/auth/signup')
+          .send({ ...user, email: '' })
+          .expect(400, {
+            statusCode: 400,
+            message: ['email must be an email'],
+            error: 'Bad Request',
+          });
+      });
+
+      test('Passwords do not match', () => {
+        return request(app.getHttpServer())
+          .post('/auth/signup')
+          .send({ ...user, password: 'asdasd' })
+          .expect(400, {
+            statusCode: 400,
+            message: [
+              {
+                message: '"password" length must be at least 8 characters long',
+                path: 'password',
+              },
+            ],
+            error: 'Bad Request',
+          });
+      });
+
+      test('Password is absent', () => {
+        return request(app.getHttpServer())
+          .post('/auth/signup')
+          .send({ ...user, password: undefined })
+          .expect(400, {
+            statusCode: 400,
+            message: ['password must be a string'],
+            error: 'Bad Request',
+          });
+      });
+
+      test('Password confirmation is absent', () => {
+        return request(app.getHttpServer())
+          .post('/auth/signup')
+          .send({ ...user, passwordConfirmation: undefined })
+          .expect(400, {
+            statusCode: 400,
+            message: ['passwordConfirmation must be a string'],
+            error: 'Bad Request',
+          });
+      });
+
+      test('Both passwords absent', () => {
+        return request(app.getHttpServer())
+          .post('/auth/signup')
+          .send({
+            ...user,
+            passwordConfirmation: undefined,
+            password: undefined,
+          })
+          .expect(400, {
+            statusCode: 400,
+            message: [
+              'password must be a string',
+              'passwordConfirmation must be a string',
+            ],
+            error: 'Bad Request',
+          });
+      });
+
+      test('Empty request', () => {
+        return request(app.getHttpServer())
+          .post('/auth/signup')
+          .send()
+          .expect(400, {
+            statusCode: 400,
+            message: [
+              'email must be an email',
+              'phone must be a string',
+              'password must be a string',
+              'passwordConfirmation must be a string',
+              'role must be a string',
+              'firstName must be a string',
+              'lastName must be a string',
             ],
             error: 'Bad Request',
           });

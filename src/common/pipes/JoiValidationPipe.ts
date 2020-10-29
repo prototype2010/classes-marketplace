@@ -10,10 +10,19 @@ import { ObjectSchema } from '@hapi/joi';
 export class JoiValidationPipe implements PipeTransform {
   constructor(private schema: ObjectSchema) {}
 
+  simplifyPath(pathArray = []) {
+    return pathArray.map(key => `${key}`).join('.');
+  }
+
   transform(value: any, metadata: ArgumentMetadata) {
     const { error } = this.schema.validate(value);
     if (error) {
-      throw new BadRequestException('Validation failed');
+      const errors = error.details.map(({ message, path }) => ({
+        message,
+        path: this.simplifyPath(path),
+      }));
+
+      throw new BadRequestException(errors);
     }
     return value;
   }
