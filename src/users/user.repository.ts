@@ -1,20 +1,26 @@
 import * as bcrypt from 'bcrypt';
 import { EntityRepository, Repository } from 'typeorm';
-import { User } from '../entity/user.entity';
-import { ParentDTO } from '../auth/dto/parent.dto';
+import { User, USER_ROLES } from '../entity/user.entity';
 import { ConflictException } from '@nestjs/common';
-import { USER_ROLES } from './user.types.enum';
+import { SignUpDTO } from '../auth/dto/signup.dto';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  async createUser({ email, password, phone }: ParentDTO) {
+  async createUser({
+    email,
+    password,
+    phone,
+    firstName,
+    lastName,
+    role,
+  }: SignUpDTO) {
     await this.checkNotExist(email);
 
     const user = new User();
     user.email = email;
     user.phone = phone;
     user.password = await this.hashPassword(password);
-    user.type = USER_ROLES.PARENT;
+    user.role = USER_ROLES.PARENT;
 
     return user.save();
   }

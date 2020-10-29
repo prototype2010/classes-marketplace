@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ParentDTO } from '../auth/dto/parent.dto';
-import { BusinessDTO } from '../auth/dto/business.dto';
 import { UserRepository } from './user.repository';
 import { Connection } from 'typeorm';
+import { SignUpDTO } from '../auth/dto/signup.dto';
 
 @Injectable()
 export class UserService {
@@ -13,7 +12,7 @@ export class UserService {
     );
   }
 
-  async createUser(parentDTO: ParentDTO) {
-    return this.userRepository.createUser(parentDTO);
+  async createUser(signUpDTO: SignUpDTO) {
+    return this.userRepository.createUser(signUpDTO);
   }
 }

@@ -7,8 +7,9 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { SignUpDTO } from './dto/signup.dto';
+import { SignUpDTO, SignUpSchema } from './dto/signup.dto';
 import { AuthService } from './auth.service';
+import { JoiValidationPipe } from '../common/pipes/JoiValidationPipe';
 
 @UsePipes(new ValidationPipe({ transform: true }))
 @UseInterceptors(ClassSerializerInterceptor)
@@ -17,7 +18,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('signup')
-  signup(@Body() parentDTO: SignUpDTO) {
+  signup(@Body(new JoiValidationPipe(SignUpSchema)) parentDTO: SignUpDTO) {
     return this.authService.signUp(parentDTO);
   }
 }

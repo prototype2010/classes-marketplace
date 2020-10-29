@@ -1,5 +1,5 @@
 import { IsEmail, IsString } from 'class-validator';
-import { PUBLIC_USER_ROLES } from '../../entity/user.entity';
+import { USER_ROLES } from '../../entity/user.entity';
 
 import * as Joi from '@hapi/joi';
 import { EXCEPTION_MESSAGES } from '../../common/exceptionMessages';
@@ -18,7 +18,7 @@ export class SignUpDTO {
   passwordConfirmation: string;
 
   @IsString()
-  role: PUBLIC_USER_ROLES;
+  role: string;
 
   @IsString()
   firstName: string;
@@ -46,6 +46,10 @@ export const SignUpSchema = Joi.object().keys({
     .required(),
 
   role: Joi.string()
-    .valid(...Object.values(PUBLIC_USER_ROLES))
+    .valid(USER_ROLES.BUSINESS, USER_ROLES.PARENT)
     .required(),
+
+  firstName: Joi.string().required(),
+
+  lastName: Joi.string().required(),
 });
