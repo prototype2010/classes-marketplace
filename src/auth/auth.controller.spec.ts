@@ -9,7 +9,7 @@ import { UsersModule } from '../users/users.module';
 import { AuthModule } from './auth.module';
 const { internet, phone, company, name, random } = faker;
 
-describe('UsersController', () => {
+describe('AuthController', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
