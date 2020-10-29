@@ -15,14 +15,17 @@ export class JoiValidationPipe implements PipeTransform {
   }
 
   transform(value: any, metadata: ArgumentMetadata) {
-    const { error } = this.schema.validate(value);
+    const { error } = this.schema.validate(value, {
+      abortEarly: false,
+      allowUnknown: false,
+    });
     if (error) {
-      const errors = error.details.map(({ message, path }) => ({
+      const errors2 = error.details.map(({ message, path }) => ({
         message,
         path: this.simplifyPath(path),
       }));
 
-      throw new BadRequestException(errors);
+      throw new BadRequestException(errors2);
     }
     return value;
   }

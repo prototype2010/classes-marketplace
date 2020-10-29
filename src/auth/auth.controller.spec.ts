@@ -309,7 +309,7 @@ describe('AuthController', () => {
           });
       });
 
-      test('Empty request', () => {
+      fit('Empty request', () => {
         return request(app.getHttpServer())
           .post('/auth/signup')
           .send()
