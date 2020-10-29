@@ -34,7 +34,7 @@ describe('AuthController', () => {
       beforeEach(() => {
         /* parent */
         user.email = internet.email();
-        user.phone = phone.phoneNumber();
+        user.phone = random.alphaNumeric(10);
         user.password = random.alphaNumeric(10);
         user.passwordConfirmation = user.password;
         user.firstName = random.alphaNumeric(10);
@@ -42,13 +42,13 @@ describe('AuthController', () => {
         user.role = USER_ROLES.BUSINESS;
       });
 
-      it('User can be registered successfully', () =>
+      test('User can be registered successfully', () =>
         request(app.getHttpServer())
           .post('/auth/signup')
           .send(user)
           .expect(201));
 
-      it('Responce matches to user data', () =>
+      test('Responce matches to user data', () =>
         request(app.getHttpServer())
           .post('/auth/signup')
           .send(user)
@@ -68,7 +68,7 @@ describe('AuthController', () => {
       beforeEach(() => {
         /* parent */
         user.email = internet.email();
-        user.phone = phone.phoneNumber();
+        user.phone = random.alphaNumeric(10);
         user.password = random.alphaNumeric(10);
         user.passwordConfirmation = user.password;
         user.firstName = faker.random.alphaNumeric(10);
@@ -95,7 +95,9 @@ describe('AuthController', () => {
           .send({ ...user, email: '' })
           .expect(400, {
             statusCode: 400,
-            message: ['email must be an email'],
+            message: [
+              { message: '"email" is not allowed to be empty', path: 'email' },
+            ],
             error: 'Bad Request',
           });
       });
@@ -111,6 +113,10 @@ describe('AuthController', () => {
                 message: '"password" length must be at least 8 characters long',
                 path: 'password',
               },
+              {
+                message: '"passwordConfirmation" must be [ref:password]',
+                path: 'passwordConfirmation',
+              },
             ],
             error: 'Bad Request',
           });
@@ -121,7 +127,13 @@ describe('AuthController', () => {
           .send({ ...user, password: undefined })
           .expect(400, {
             statusCode: 400,
-            message: ['password must be a string'],
+            message: [
+              { message: '"password" is required', path: 'password' },
+              {
+                message: '"passwordConfirmation" must be [ref:password]',
+                path: 'passwordConfirmation',
+              },
+            ],
             error: 'Bad Request',
           });
       });
@@ -132,7 +144,12 @@ describe('AuthController', () => {
           .send({ ...user, passwordConfirmation: undefined })
           .expect(400, {
             statusCode: 400,
-            message: ['passwordConfirmation must be a string'],
+            message: [
+              {
+                message: '"passwordConfirmation" is required',
+                path: 'passwordConfirmation',
+              },
+            ],
             error: 'Bad Request',
           });
       });
@@ -148,8 +165,11 @@ describe('AuthController', () => {
           .expect(400, {
             statusCode: 400,
             message: [
-              'password must be a string',
-              'passwordConfirmation must be a string',
+              { message: '"password" is required', path: 'password' },
+              {
+                message: '"passwordConfirmation" is required',
+                path: 'passwordConfirmation',
+              },
             ],
             error: 'Bad Request',
           });
@@ -162,13 +182,16 @@ describe('AuthController', () => {
           .expect(400, {
             statusCode: 400,
             message: [
-              'email must be an email',
-              'phone must be a string',
-              'password must be a string',
-              'passwordConfirmation must be a string',
-              'role must be a string',
-              'firstName must be a string',
-              'lastName must be a string',
+              { message: '"email" is required', path: 'email' },
+              { message: '"phone" is required', path: 'phone' },
+              { message: '"password" is required', path: 'password' },
+              {
+                message: '"passwordConfirmation" is required',
+                path: 'passwordConfirmation',
+              },
+              { message: '"role" is required', path: 'role' },
+              { message: '"firstName" is required', path: 'firstName' },
+              { message: '"lastName" is required', path: 'lastName' },
             ],
             error: 'Bad Request',
           });
@@ -248,7 +271,9 @@ describe('AuthController', () => {
           .send({ ...user, email: '' })
           .expect(400, {
             statusCode: 400,
-            message: ['email must be an email'],
+            message: [
+              { message: '"email" is not allowed to be empty', path: 'email' },
+            ],
             error: 'Bad Request',
           });
       });
@@ -264,6 +289,10 @@ describe('AuthController', () => {
                 message: '"password" length must be at least 8 characters long',
                 path: 'password',
               },
+              {
+                message: '"passwordConfirmation" must be [ref:password]',
+                path: 'passwordConfirmation',
+              },
             ],
             error: 'Bad Request',
           });
@@ -275,7 +304,13 @@ describe('AuthController', () => {
           .send({ ...user, password: undefined })
           .expect(400, {
             statusCode: 400,
-            message: ['password must be a string'],
+            message: [
+              { message: '"password" is required', path: 'password' },
+              {
+                message: '"passwordConfirmation" must be [ref:password]',
+                path: 'passwordConfirmation',
+              },
+            ],
             error: 'Bad Request',
           });
       });
@@ -286,7 +321,12 @@ describe('AuthController', () => {
           .send({ ...user, passwordConfirmation: undefined })
           .expect(400, {
             statusCode: 400,
-            message: ['passwordConfirmation must be a string'],
+            message: [
+              {
+                message: '"passwordConfirmation" is required',
+                path: 'passwordConfirmation',
+              },
+            ],
             error: 'Bad Request',
           });
       });
@@ -302,27 +342,33 @@ describe('AuthController', () => {
           .expect(400, {
             statusCode: 400,
             message: [
-              'password must be a string',
-              'passwordConfirmation must be a string',
+              { message: '"password" is required', path: 'password' },
+              {
+                message: '"passwordConfirmation" is required',
+                path: 'passwordConfirmation',
+              },
             ],
             error: 'Bad Request',
           });
       });
 
-      fit('Empty request', () => {
+      test('Empty request', () => {
         return request(app.getHttpServer())
           .post('/auth/signup')
           .send()
           .expect(400, {
             statusCode: 400,
             message: [
-              'email must be an email',
-              'phone must be a string',
-              'password must be a string',
-              'passwordConfirmation must be a string',
-              'role must be a string',
-              'firstName must be a string',
-              'lastName must be a string',
+              { message: '"email" is required', path: 'email' },
+              { message: '"phone" is required', path: 'phone' },
+              { message: '"password" is required', path: 'password' },
+              {
+                message: '"passwordConfirmation" is required',
+                path: 'passwordConfirmation',
+              },
+              { message: '"role" is required', path: 'role' },
+              { message: '"firstName" is required', path: 'firstName' },
+              { message: '"lastName" is required', path: 'lastName' },
             ],
             error: 'Bad Request',
           });

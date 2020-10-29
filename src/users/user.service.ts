@@ -18,6 +18,13 @@ export class UserService {
   }
 
   async createUser(signUpDTO: SignUpDTO) {
-    return this.userRepository.createUser(signUpDTO as any);
+    try {
+      return this.userRepository.createUser(signUpDTO as any).catch(e => {
+        var x = 1;
+      });
+    } catch (e) {
+      console.error('################################');
+      console.error(e);
+    }
   }
 }
