@@ -15,7 +15,7 @@ export class AuthService {
     return this.userService.createUser(signUpDTO);
   }
 
-  login({ id, role }: Partial<User>) {
+  login({ id, role }: any) {
     const payload = { id, role };
 
     return {

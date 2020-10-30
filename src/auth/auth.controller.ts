@@ -6,13 +6,13 @@ import {
   Post,
   UseGuards,
   UseInterceptors,
+  Request,
 } from '@nestjs/common';
 import { SignUpDTO, SignUpSchema } from './dto/signup.dto';
 import { AuthService } from './auth.service';
 import { JoiValidationPipe } from '../common/pipes/JoiValidationPipe';
-import { SignInDTO, SignInSchema } from './dto/signin.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { LocalAuthGuard } from './dto/local-auth.guard';
+import { LocalAuthGuard } from './local-auth.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
@@ -27,10 +27,8 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('signin')
-  signin(@Body(new JoiValidationPipe(SignInSchema)) signInDTO: SignInDTO) {
-    const { email, password } = signInDTO;
-
-    return this.authService.validateUser(email, password);
+  async signin(@Request() req: any) {
+    return this.authService.login(req.user);
   }
 
   @Post('signup')

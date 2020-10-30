@@ -37,6 +37,7 @@ export class User extends BaseEntity {
   @Column({ nullable: false, default: false })
   isEmailConfirmed: boolean;
 
+  @Exclude()
   @Column({ nullable: false })
   emailConfirmationHash: string;
 }
