@@ -56,10 +56,9 @@ export class UserRepository extends Repository<User> {
 
   async validateUser(email: string, password: string) {
     const user: User = await this.findUser({ email });
+    const passwordsMatch = await bcrypt.compare(password, user.password);
 
-    const providedPasswordHash = await this.hash(password);
-
-    if (providedPasswordHash === user.password) {
+    if (passwordsMatch) {
       const { password, ...restParams } = user;
 
       return restParams;
