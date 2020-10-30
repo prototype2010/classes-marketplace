@@ -13,6 +13,8 @@ import { AuthService } from './auth.service';
 import { JoiValidationPipe } from '../common/pipes/JoiValidationPipe';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
+import Joi from '@hapi/joi';
+import { SignInDTO, SignInSchema } from './dto/signin.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
@@ -32,7 +34,7 @@ export class AuthController {
   }
 
   @Post('signup')
-  signup(@Body(new JoiValidationPipe(SignUpSchema)) parentDTO: SignUpDTO) {
-    return this.authService.signUp(parentDTO);
+  signup(@Body(new JoiValidationPipe(SignUpSchema)) signUpDTO: SignUpDTO) {
+    return this.authService.signUp(signUpDTO);
   }
 }
