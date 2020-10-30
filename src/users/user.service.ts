@@ -15,4 +15,8 @@ export class UserService {
   async createUser(signUpDTO: SignUpDTO) {
     return this.userRepository.createUser(signUpDTO as any);
   }
+
+  validateUser(email: string, password: string) {
+    return this.userRepository.validateUser(email, password);
+  }
 }

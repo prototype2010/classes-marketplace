@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import { EntityRepository, Repository } from 'typeorm';
 import { User, USER_ROLES } from '../entity/user.entity';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { SignUpDTO } from '../auth/dto/signup.dto';
 
 @EntityRepository(User)
@@ -30,6 +30,16 @@ export class UserRepository extends Repository<User> {
     return user.save();
   }
 
+  private async findUser(params: { [key: string]: any }) {
+    const user = await this.findOne(params);
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return user;
+  }
+
   private async checkNotExist(email: string) {
     const existingUser = await this.findOne({ email });
 
@@ -42,5 +52,18 @@ export class UserRepository extends Repository<User> {
     const salt = await bcrypt.genSalt(saltRounds);
 
     return bcrypt.hash(password, salt);
+  }
+
+  async validateUser(email: string, password: string) {
+    const user: User = await this.findUser({ email });
+    const passwordsMatch = await bcrypt.compare(password, user.password);
+
+    if (passwordsMatch) {
+      const { password, ...restParams } = user;
+
+      return restParams;
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 }
