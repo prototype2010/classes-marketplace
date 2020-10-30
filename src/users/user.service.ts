@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from './user.repository';
 import { Connection } from 'typeorm';
+
 import { SignUpDTO } from '../auth/dto/signup.dto';
+import { GoogleUser } from '../auth/google.strategy';
+
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
@@ -18,5 +21,9 @@ export class UserService {
 
   validateUser(email: string, password: string) {
     return this.userRepository.validateUser(email, password);
+  }
+
+  findOrCreateGoogleUser(user: Partial<GoogleUser>) {
+    return this.userRepository.findOrCreateGoogleUser(user);
   }
 }

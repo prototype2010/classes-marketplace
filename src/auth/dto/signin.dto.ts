@@ -1,5 +1,4 @@
 import { IsEmail, IsString } from 'class-validator';
-
 import * as Joi from '@hapi/joi';
 
 export class SignInDTO {

@@ -1,7 +1,7 @@
 import { IsEmail, IsString } from 'class-validator';
-import { USER_ROLES } from '../../entity/user.entity';
-
 import * as Joi from '@hapi/joi';
+
+import { USER_ROLES } from '../../entity/user.entity';
 import { EXCEPTION_MESSAGES } from '../../common/exceptionMessages';
 
 export class SignUpDTO {
