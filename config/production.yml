@@ -9,4 +9,5 @@ db:
   password:
   host: localhost
 jwt:
-  expiresIn:
+  expiresIn: 8h
+  secret: asdhasdaskhdjaskdh

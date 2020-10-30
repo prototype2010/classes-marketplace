@@ -9,4 +9,5 @@ db:
   password: Firstday2010
   host: localhost
 jwt:
-  expiresIn: 3600
+  expiresIn: 8h
+  secret: asdhasdaskhdjaskdh
