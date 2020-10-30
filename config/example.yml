@@ -5,8 +5,8 @@ db:
   port: 5432
   database: auction
   synchronize: false
-  username: powerchain
-  password: Firstday2010
+  username: 
+  password: 
   host: localhost
 jwt:
   expiresIn: 8h
