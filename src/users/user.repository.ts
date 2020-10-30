@@ -31,7 +31,7 @@ export class UserRepository extends Repository<User> {
   }
 
   private async findUser(params: { [key: string]: any }) {
-    const user = this.findOne(params);
+    const user = await this.findOne(params);
 
     if (!user) {
       throw new UnauthorizedException();
