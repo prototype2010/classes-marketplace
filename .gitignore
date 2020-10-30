@@ -35,5 +35,5 @@ lerna-debug.log*
 .idea
 
 #config files
-#config/*
+config/*
 !config/example.yml
