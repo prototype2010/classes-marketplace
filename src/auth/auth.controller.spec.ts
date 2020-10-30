@@ -27,7 +27,7 @@ describe('AuthController', () => {
   });
 
   describe('Registration', () => {
-    describe('Successful registration', () => {
+    describe('successful', () => {
       /* eslint-disable-next-line */
       let user: { [key: string]: any } = {};
 
@@ -61,7 +61,7 @@ describe('AuthController', () => {
           }));
     });
 
-    describe('Unsuccessful registration', () => {
+    describe('unsuccessful', () => {
       /* eslint-disable-next-line */
       let user: { [key: string]: any } = {};
 
@@ -225,8 +225,8 @@ describe('AuthController', () => {
     });
   });
 
-  describe('Authorizaion', () => {
-    describe('Authorization successful', () => {
+  describe('Authorization', () => {
+    describe('successful', () => {
       /* eslint-disable-next-line */
       let user: { [key: string]: any } = {};
 
@@ -265,63 +265,64 @@ describe('AuthController', () => {
             expect(body.token).toBeTruthy();
           }));
     });
-  });
-  fdescribe('Authorization unsuccessful', () => {
-    /* eslint-disable-next-line */
-    let user: { [key: string]: any } = {};
 
-    beforeEach(async () => {
-      /* parent */
-      user.email = internet.email();
-      user.phone = random.alphaNumeric(10);
-      user.password = random.alphaNumeric(10);
-      user.passwordConfirmation = user.password;
-      user.firstName = random.alphaNumeric(10);
-      user.lastName = random.alphaNumeric(10);
-      user.role = USER_ROLES.BUSINESS;
+    describe('unsuccessful', () => {
+      /* eslint-disable-next-line */
+      let user: { [key: string]: any } = {};
 
-      await request(app.getHttpServer())
-        .post('/auth/signup')
-        .send(user);
+      beforeEach(async () => {
+        /* parent */
+        user.email = internet.email();
+        user.phone = random.alphaNumeric(10);
+        user.password = random.alphaNumeric(10);
+        user.passwordConfirmation = user.password;
+        user.firstName = random.alphaNumeric(10);
+        user.lastName = random.alphaNumeric(10);
+        user.role = USER_ROLES.BUSINESS;
+
+        await request(app.getHttpServer())
+          .post('/auth/signup')
+          .send(user);
+      });
+
+      test('User cannot login with wrong password', () =>
+        request(app.getHttpServer())
+          .post('/auth/signin')
+          .send({
+            email: user.email,
+            password: user.email,
+          })
+          .expect(401, { statusCode: 401, message: 'Unauthorized' }));
+
+      test('User cannot login with wrong email', () =>
+        request(app.getHttpServer())
+          .post('/auth/signin')
+          .send({
+            email: 'chuck_norris@mail.ru',
+            password: user.password,
+          })
+          .expect(401, { statusCode: 401, message: 'Unauthorized' }));
+
+      test('User cannot login with wrong email', () =>
+        request(app.getHttpServer())
+          .post('/auth/signin')
+          .send({
+            email: 'chuck_norris@mail.ru',
+            password: user.password,
+          })
+          .expect(401, { statusCode: 401, message: 'Unauthorized' }));
+
+      test('User cannot login with empty fields', () =>
+        request(app.getHttpServer())
+          .post('/auth/signin')
+          .send({})
+          .expect(401, { statusCode: 401, message: 'Unauthorized' }));
+
+      test('Other fields are not allowed', () =>
+        request(app.getHttpServer())
+          .post('/auth/signin')
+          .send({ secret: '123124' })
+          .expect(401, { statusCode: 401, message: 'Unauthorized' }));
     });
-
-    test('User cannot login with wrong password', () =>
-      request(app.getHttpServer())
-        .post('/auth/signin')
-        .send({
-          email: user.email,
-          password: user.email,
-        })
-        .expect(401, { statusCode: 401, message: 'Unauthorized' }));
-
-    test('User cannot login with wrong email', () =>
-      request(app.getHttpServer())
-        .post('/auth/signin')
-        .send({
-          email: 'chuck_norris@mail.ru',
-          password: user.password,
-        })
-        .expect(401, { statusCode: 401, message: 'Unauthorized' }));
-
-    test('User cannot login with wrong email', () =>
-      request(app.getHttpServer())
-        .post('/auth/signin')
-        .send({
-          email: 'chuck_norris@mail.ru',
-          password: user.password,
-        })
-        .expect(401, { statusCode: 401, message: 'Unauthorized' }));
-
-    test('User cannot login with empty fields', () =>
-      request(app.getHttpServer())
-        .post('/auth/signin')
-        .send({})
-        .expect(401, { statusCode: 401, message: 'Unauthorized' }));
-
-    test('Other fields are not allowed', () =>
-      request(app.getHttpServer())
-        .post('/auth/signin')
-        .send({ secret: '123124' })
-        .expect(401, { statusCode: 401, message: 'Unauthorized' }));
   });
 });
