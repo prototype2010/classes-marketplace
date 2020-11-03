@@ -1,13 +1,17 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
-
 import * as faker from 'faker';
 import { INestApplication } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { TypeOrmConfigOptions } from '../app.module';
 import { UsersModule } from '../users/users.module';
+import { User, USER_ROLES } from '../entity/user.entity';
+import { hashString } from '../utils/hash';
+import { createUserByParams } from '../utils/test';
+
 import { AuthModule } from './auth.module';
-import { USER_ROLES } from '../entity/user.entity';
+
 const { internet, random } = faker;
 
 describe('AuthController', () => {
@@ -231,18 +235,8 @@ describe('AuthController', () => {
       let user: { [key: string]: any } = {};
 
       beforeEach(async () => {
-        /* parent */
-        user.email = internet.email();
-        user.phone = random.alphaNumeric(10);
-        user.password = random.alphaNumeric(10);
-        user.passwordConfirmation = user.password;
-        user.firstName = random.alphaNumeric(10);
-        user.lastName = random.alphaNumeric(10);
-        user.role = USER_ROLES.BUSINESS;
-
-        await request(app.getHttpServer())
-          .post('/auth/signup')
-          .send(user);
+        const { userParams } = await createUserByParams();
+        user = userParams;
       });
 
       test('User can sign in successfully', () =>
@@ -254,7 +248,7 @@ describe('AuthController', () => {
           })
           .expect(201));
 
-      test('Token is present in response body', () =>
+      fit('Token is present in response body', () =>
         request(app.getHttpServer())
           .post('/auth/signin')
           .send({

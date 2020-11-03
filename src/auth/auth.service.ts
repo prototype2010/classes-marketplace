@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { SignUpDTO } from './dto/signup.dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+
 import { UserService } from '../users/user.service';
 import { User } from '../entity/user.entity';
-import { JwtService } from '@nestjs/jwt';
+
+import { SignUpDTO } from './dto/signup.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +17,7 @@ export class AuthService {
     return this.userService.createUser(signUpDTO);
   }
 
-  login({ id, role }: any) {
+  signIn({ id, role }: Partial<User>) {
     const payload = { id, role };
 
     return {
@@ -25,5 +27,15 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     return this.userService.validateUser(email, password);
+  }
+
+  async googleLogin(req) {
+    if (!req.user) {
+      throw new UnauthorizedException('No user from google');
+    }
+
+    const user = await this.userService.findOrCreateGoogleUser(req.user);
+
+    return this.signIn(user);
   }
 }

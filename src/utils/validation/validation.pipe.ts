@@ -20,8 +20,9 @@ export class ValidationPipe implements PipeTransform<any> {
     }
     return value;
   }
-
+  /* eslint-disable-next-line */
   private toValidate(metatype: Function): boolean {
+    /* eslint-disable-next-line */
     const types: Function[] = [String, Boolean, Number, Array, Object];
     return !types.includes(metatype);
   }

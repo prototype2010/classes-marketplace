@@ -14,6 +14,7 @@ export class JoiValidationPipe implements PipeTransform {
     return pathArray.map(key => `${key}`).join('.');
   }
 
+  /* eslint-disable-next-line */
   transform(value: any, metadata: ArgumentMetadata) {
     const { error } = this.schema.validate(value, {
       abortEarly: false,

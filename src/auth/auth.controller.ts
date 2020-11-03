@@ -6,15 +6,18 @@ import {
   Post,
   UseGuards,
   UseInterceptors,
-  Request,
+  Req,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
+
+import { JoiValidationPipe } from '../common/pipes/JoiValidationPipe';
+import { AuthorizedRequest } from '../utils/types/authorized.request.interface';
+
+import { LocalAuthGuard } from './local-auth.guard';
 import { SignUpDTO, SignUpSchema } from './dto/signup.dto';
 import { AuthService } from './auth.service';
-import { JoiValidationPipe } from '../common/pipes/JoiValidationPipe';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { LocalAuthGuard } from './local-auth.guard';
-import Joi from '@hapi/joi';
-import { SignInDTO, SignInSchema } from './dto/signin.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
@@ -29,12 +32,23 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('signin')
-  async signin(@Request() req: any) {
-    return this.authService.login(req.user);
+  async signin(@Req() req: AuthorizedRequest) {
+    return this.authService.signIn(req.user);
   }
 
   @Post('signup')
   signup(@Body(new JoiValidationPipe(SignUpSchema)) signUpDTO: SignUpDTO) {
     return this.authService.signUp(signUpDTO);
+  }
+
+  @UseGuards(AuthGuard('google'))
+  @Get('google')
+  /* eslint-disable-next-line */
+  async googleAuth(@Req() req: Request) {}
+
+  @UseGuards(AuthGuard('google'))
+  @Get('google/redirect')
+  async googleAuthRedirect(@Req() req: Request) {
+    return this.authService.googleLogin(req);
   }
 }
