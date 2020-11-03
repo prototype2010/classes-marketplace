@@ -12,30 +12,33 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: false, default: USER_ROLES.PARENT })
+  @Column({ default: USER_ROLES.PARENT })
   role: USER_ROLES;
 
   @Column({ unique: true })
   email: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Exclude()
   password: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   firstName: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   lastName: string;
 
-  @Column({ nullable: false, default: false })
+  @Column({ default: false })
   isApprovedByAdmin: boolean;
 
-  @Column({ nullable: false, default: false })
+  @Column({ default: false })
   isEmailConfirmed: boolean;
+
+  @Column({ nullable: true })
+  googleId: number;
 
   @Exclude()
   @Column({ nullable: false })

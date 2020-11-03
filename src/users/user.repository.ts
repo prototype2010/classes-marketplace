@@ -1,8 +1,11 @@
 import * as bcrypt from 'bcrypt';
 import { EntityRepository, Repository } from 'typeorm';
-import { User, USER_ROLES } from '../entity/user.entity';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
+
+import { User, USER_ROLES } from '../entity/user.entity';
 import { SignUpDTO } from '../auth/dto/signup.dto';
+import { GoogleUser } from '../auth/google.strategy';
+import { hashString } from '../utils/hash';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -10,28 +13,31 @@ export class UserRepository extends Repository<User> {
     email,
     password,
     phone,
-    passwordConfirmation,
     lastName,
     role,
     firstName,
   }: SignUpDTO) {
     await this.checkNotExist(email);
 
-    const user = new User();
-    user.email = email;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.phone = passwordConfirmation;
-    user.phone = phone;
-    user.password = await this.hash(password);
-    user.emailConfirmationHash = await this.hash(email);
-    user.role = role as USER_ROLES;
+    const userRole = <USER_ROLES>role;
+    const emailConfirmationHash = await hashString(email);
+    const userPassword = await hashString(password);
+
+    const user = User.merge(new User(), {
+      email,
+      password: userPassword,
+      phone,
+      lastName,
+      role: userRole,
+      firstName,
+      emailConfirmationHash,
+    });
 
     return user.save();
   }
 
-  private async findUser(params: { [key: string]: any }) {
-    const user = await this.findOne(params);
+  private async findUser(...params: Array<Partial<User>>) {
+    const user = await this.findOne(...params);
 
     if (!user) {
       throw new UnauthorizedException();
@@ -48,22 +54,47 @@ export class UserRepository extends Repository<User> {
     }
   }
 
-  private async hash(password: string, saltRounds = 10) {
-    const salt = await bcrypt.genSalt(saltRounds);
-
-    return bcrypt.hash(password, salt);
-  }
-
   async validateUser(email: string, password: string) {
     const user: User = await this.findUser({ email });
     const passwordsMatch = await bcrypt.compare(password, user.password);
 
     if (passwordsMatch) {
+      /* eslint-disable-next-line */
       const { password, ...restParams } = user;
 
       return restParams;
     } else {
       throw new UnauthorizedException();
     }
+  }
+
+  async findOrCreateGoogleUser(googleUser: Partial<GoogleUser>) {
+    const { email, googleId } = googleUser;
+
+    const user: User = await this.findOne({ where: [{ email }, { googleId }] });
+
+    if (user) {
+      return user;
+    } else {
+      return this.createGoogleUser(googleUser);
+    }
+  }
+
+  private async createGoogleUser({
+    lastName,
+    firstName,
+    email,
+    googleId,
+  }: Partial<GoogleUser>) {
+    const user = User.merge(new User(), {
+      lastName,
+      firstName,
+      email,
+      googleId,
+      isEmailConfirmed: true,
+      role: USER_ROLES.PARENT,
+    });
+
+    return user.save();
   }
 }

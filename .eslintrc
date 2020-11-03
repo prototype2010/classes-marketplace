@@ -1,25 +1,47 @@
 {
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "project": "tsconfig.json",
-        "sourceType": "module"
-    },
-    "plugins": ["@typescript-eslint/eslint-plugin"],
-    "extends": [
-        "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended",
-        "prettier/@typescript-eslint",
-        "plugin:prettier/recommended"
-    ],
-    "root": true,
-    "env": {
-        "node": true,
-        "jest": true
-    },
-    "rules": {
-        "@typescript-eslint/interface-name-prefix": "off",
-        "@typescript-eslint/explicit-function-return-type": "off",
-        "@typescript-eslint/explicit-module-boundary-types": "off",
-        "@typescript-eslint/no-explicit-any": "off"
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint/eslint-plugin",
+    "eslint-plugin-simple-import-sort",
+    "simple-import-sort",
+    "import"
+  ],
+  "extends": [
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier/@typescript-eslint",
+    "plugin:prettier/recommended"
+  ],
+  "root": true,
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "rules": {
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/await-thenable": "error",
+    "simple-import-sort/sort": "error",
+    "sort-imports": "off",
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/no-duplicates": "error",
+    "no-unused-vars": "error"
+  },
+  "overrides": [
+    {
+      "files": "src/**/*.ts",
+        "env": { "node": true, "jest":true },
+      "rules": {
+        "simple-import-sort/sort": "off",
+        "import/order": ["error", { "newlines-between": "always" }]
+      }
     }
+  ]
 }
