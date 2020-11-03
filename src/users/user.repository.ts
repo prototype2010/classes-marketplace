@@ -6,6 +6,7 @@ import { User, USER_ROLES } from '../entity/user.entity';
 import { SignUpDTO } from '../auth/dto/signup.dto';
 import { GoogleUser } from '../auth/google.strategy';
 import { hashString } from '../utils/hash';
+import { FacebookUser } from '../auth/facebook.strategy';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -73,14 +74,10 @@ export class UserRepository extends Repository<User> {
 
     const user: User = await this.findOne({ where: [{ email }, { googleId }] });
 
-    if (user) {
-      return user;
-    } else {
-      return this.createGoogleUser(googleUser);
-    }
+    return user ? user : this.createGoogleUser(googleUser);
   }
 
-  private async createGoogleUser({
+  private createGoogleUser({
     lastName,
     firstName,
     email,
@@ -91,6 +88,34 @@ export class UserRepository extends Repository<User> {
       firstName,
       email,
       googleId,
+      isEmailConfirmed: true,
+      role: USER_ROLES.PARENT,
+    });
+
+    return user.save();
+  }
+
+  async findOrCreateFacebookUser(facebookUser: Partial<FacebookUser>) {
+    const { email, facebookId } = facebookUser;
+
+    const user: User = await this.findOne({
+      where: [{ email }, { facebookId }],
+    });
+
+    return user ? user : this.createFacebookUser(facebookUser);
+  }
+
+  private createFacebookUser({
+    lastName,
+    firstName,
+    email,
+    facebookId,
+  }: Partial<FacebookUser>) {
+    const user = User.merge(new User(), {
+      lastName,
+      firstName,
+      email,
+      facebookId,
       isEmailConfirmed: true,
       role: USER_ROLES.PARENT,
     });
