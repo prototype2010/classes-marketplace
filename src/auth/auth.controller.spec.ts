@@ -6,8 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { TypeOrmConfigOptions } from '../app.module';
 import { UsersModule } from '../users/users.module';
-import { User, USER_ROLES } from '../entity/user.entity';
-import { hashString } from '../utils/hash';
+import { USER_ROLES } from '../entity/user.entity';
 import { createUserByParams } from '../utils/test';
 
 import { AuthModule } from './auth.module';

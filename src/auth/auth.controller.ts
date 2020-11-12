@@ -4,9 +4,9 @@ import {
   Controller,
   Get,
   Post,
+  Req,
   UseGuards,
   UseInterceptors,
-  Req,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
@@ -50,5 +50,16 @@ export class AuthController {
   @Get('google/redirect')
   async googleAuthRedirect(@Req() req: Request) {
     return this.authService.googleLogin(req);
+  }
+
+  @UseGuards(AuthGuard('facebook'))
+  @Get('facebook')
+  /* eslint-disable-next-line */
+  async facebookAuth(@Req() req: Request) {}
+
+  @UseGuards(AuthGuard('facebook'))
+  @Get('facebook/redirect')
+  async facebookAuthRedirect(@Req() req: Request) {
+    return this.authService.facebookLogin(req);
   }
 }

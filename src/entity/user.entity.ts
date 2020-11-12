@@ -40,6 +40,9 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   googleId: number;
 
+  @Column({ nullable: true })
+  facebookId: number;
+
   @Exclude()
   @Column({ nullable: false })
   emailConfirmationHash: string;

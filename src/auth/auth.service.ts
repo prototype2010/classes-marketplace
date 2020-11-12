@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from '../users/user.service';
@@ -35,6 +39,21 @@ export class AuthService {
     }
 
     const user = await this.userService.findOrCreateGoogleUser(req.user);
+
+    return this.signIn(user);
+  }
+  async facebookLogin(req) {
+    if (!req.user) {
+      throw new UnauthorizedException('No user from facebook');
+    }
+
+    if (!req.user.email) {
+      throw new UnprocessableEntityException(
+        'You have to verify your email on facebook first',
+      );
+    }
+
+    const user = await this.userService.findOrCreateFacebookUser(req.user);
 
     return this.signIn(user);
   }

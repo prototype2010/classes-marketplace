@@ -3,6 +3,7 @@ import { Connection } from 'typeorm';
 
 import { SignUpDTO } from '../auth/dto/signup.dto';
 import { GoogleUser } from '../auth/google.strategy';
+import { FacebookUser } from '../auth/facebook.strategy';
 
 import { UserRepository } from './user.repository';
 
@@ -25,5 +26,9 @@ export class UserService {
 
   findOrCreateGoogleUser(user: Partial<GoogleUser>) {
     return this.userRepository.findOrCreateGoogleUser(user);
+  }
+
+  async findOrCreateFacebookUser(user: Partial<FacebookUser>) {
+    return this.userRepository.findOrCreateFacebookUser(user);
   }
 }
